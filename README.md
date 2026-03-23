@@ -24,7 +24,7 @@ This repository contains the backend service for GovAssist AI, providing a FastA
 - **OpenRouter API Key** (for LLM access)
 
 ### 🛠️ 1. Setup Environment
-This project uses [uv](https://github.com/astral-sh/uv) for lightning-fast dependency management.
+This project uses [uv](https://github.com/astral-sh/uv) for lightning-fast dependency management or Docker for streamlined containerized setup.
 
 ```bash
 # 1. Clone & copy environment variables
@@ -32,23 +32,34 @@ cp .env.example .env
 
 # 2. Edit .env with your OPENROUTER_API_KEY and other settings
 # Suggested model: microsoft/phi-3-mini-128k-instruct:free or anthropic/claude-3-haiku
-
-# 3. Sync project dependencies and virtual environment
-uv sync
 ```
 
-### 🗄️ 2. Start Services
+### 🐳 Option A: Using Docker (Recommended)
+This starts both the API and the Qdrant database.
+
 ```bash
-# Start Qdrant vector database
+# 1. Build and start services
 docker compose up -d
 
-# Seed the database with government documents from /data
-uv run scripts/seed_vectordb.py
+# 2. Seed the database (runs in a ephemeral container)
+docker compose run --rm api uv run scripts/seed_vectordb.py
 ```
+API Documentation will be available at: http://localhost:8000/docs
 
-### ⚡ 3. Start API
+### 🐍 Option B: Local Python Setup
+Use this for active development with auto-reload.
+
 ```bash
-# Run with auto-reload during development
+# 1. Sync project dependencies and virtual environment
+uv sync
+
+# 2. Start Qdrant vector database
+docker compose up qdrant -d
+
+# 3. Seed the database
+uv run scripts/seed_vectordb.py
+
+# 4. Start API with auto-reload
 uv run uvicorn govai.main:app --reload --port 8000
 ```
 API Documentation will be available at: http://localhost:8000/docs

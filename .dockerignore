@@ -1,0 +1,27 @@
+# Git files
+.git
+.gitignore
+
+# Python files
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.venv
+.pytest_cache
+.coverage
+htmlcov
+
+# Local environment and secret files
+.env
+.env.example
+
+# IDE files
+.vscode
+.idea
+
+# Build and project metadata
+dist
+build
+*.egg-info
+.python-version
