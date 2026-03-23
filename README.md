@@ -2,7 +2,17 @@
 
 > AI-powered assistant helping users navigate Swedish government services in English, Swedish, and Chinese.
 
-This repository contains the backend service for GovAssist AI, providing a FastAPI-based RAG (Retrieval-Augmented Generation) pipeline integrated with Qdrant vector database and OpenAI.
+This repository contains the backend service for GovAssist AI, providing a FastAPI-based RAG (Retrieval-Augmented Generation) pipeline integrated with Qdrant vector database and any LLM supported by OpenRouter (e.g., Claude, Mistral, GPT).
+
+---
+
+## 🛠️ Tech Stack
+
+- **[FastAPI](https://fastapi.tiangolo.com/)**: Modern Web Framework.
+- **[OpenRouter](https://openrouter.ai/)**: Unified LLM gateway for Claude, GPT, Mistral, etc.
+- **[Qdrant](https://qdrant.tech/)**: Vector Database for high-performance RAG.
+- **[FastEmbed](https://qdrant.github.io/fastembed/)**: Light-weight, high-speed Python library for generating embeddings.
+- **[uv](https://github.com/astral-sh/uv)**: Extremely fast Python package installer and resolver.
 
 ---
 
@@ -11,7 +21,7 @@ This repository contains the backend service for GovAssist AI, providing a FastA
 ### 📋 Prerequisites
 - **Python 3.11+** (managed via `uv`)
 - **Docker** (to run Qdrant)
-- **OpenAI API Key**
+- **OpenRouter API Key** (for LLM access)
 
 ### 🛠️ 1. Setup Environment
 This project uses [uv](https://github.com/astral-sh/uv) for lightning-fast dependency management.
@@ -19,9 +29,11 @@ This project uses [uv](https://github.com/astral-sh/uv) for lightning-fast depen
 ```bash
 # 1. Clone & copy environment variables
 cp .env.example .env
-# Edit .env with your OPENAI_API_KEY and other settings
 
-# 2. Sync project dependencies and virtual environment
+# 2. Edit .env with your OPENROUTER_API_KEY and other settings
+# Suggested model: microsoft/phi-3-mini-128k-instruct:free or anthropic/claude-3-haiku
+
+# 3. Sync project dependencies and virtual environment
 uv sync
 ```
 
