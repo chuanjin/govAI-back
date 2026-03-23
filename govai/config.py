@@ -9,8 +9,8 @@ class Settings(BaseSettings):
     embedding_model: str = "BAAI/bge-small-en-v1.5"
     embedding_dimensions: int = 384
 
-    qdrant_host: str = "localhost"
-    qdrant_port: int = 6333
+    qdrant_url: str = "http://localhost:6333"
+    qdrant_api_key: str = ""
     qdrant_collection: str = "gov_documents"
 
     chunk_size: int = 800

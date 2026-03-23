@@ -15,12 +15,28 @@ _client: QdrantClient | None = None
 
 def get_qdrant_client() -> QdrantClient:
     global _client
-    if _client is None:
+    if _client is not None:
+        return _client
+
+    try:
+        if settings.qdrant_api_key:
+            logger.info(f"Connecting to Cloud Qdrant at {settings.qdrant_url}")
+        else:
+            logger.info(f"Connecting to Local Qdrant at {settings.qdrant_url}")
+
         _client = QdrantClient(
-            host=settings.qdrant_host,
-            port=settings.qdrant_port,
+            url=settings.qdrant_url,
+            api_key=settings.qdrant_api_key,
+            timeout=10,
         )
-    return _client
+        # Test connectivity
+        _client.get_collections()
+        logger.info(f"✅ Successfully connected to Qdrant")
+        return _client
+    except Exception as e:
+        logger.error(f"❌ Failed to connect to Qdrant at {settings.qdrant_url}: {e}")
+        # Return a client instance anyway to avoid crashes, RAG will fail later
+        return QdrantClient(url=settings.qdrant_url, api_key=settings.qdrant_api_key)
 
 
 def ensure_collection():
