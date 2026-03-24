@@ -7,6 +7,10 @@ class Settings(BaseSettings):
     openrouter_api_base: str = "https://openrouter.ai/api/v1"
     openrouter_model: str = "openrouter/auto"
 
+    gemini_api_key: str = ""
+    primary_model: str = "gemini/gemini-1.5-flash"
+    fallback_model: str = "gemini/gemini-1.5-pro"
+
     embedding_model: str = "BAAI/bge-small-en-v1.5"
     embedding_dimensions: int = 384
 

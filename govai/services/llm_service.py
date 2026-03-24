@@ -1,21 +1,13 @@
 import json
 import logging
-from openai import AsyncOpenAI
+import litellm
 from govai.config import settings
 from govai.services.prompt_builder import SYSTEM_PROMPT, GUIDANCE_SYSTEM_PROMPT
 
 logger = logging.getLogger(__name__)
 
-_client: AsyncOpenAI | None = None
-
-def get_openrouter_client() -> AsyncOpenAI:
-    global _client
-    if _client is None:
-        _client = AsyncOpenAI(
-            api_key=settings.openrouter_api_key,
-            base_url=settings.openrouter_api_base,
-        )
-    return _client
+# Ensure litellm uses the API key from settings
+litellm.api_key = settings.gemini_api_key
 
 async def generate_answer(
     augmented_prompt: str,
@@ -23,11 +15,9 @@ async def generate_answer(
     is_guidance_mode: bool = False,
 ) -> dict:
     """
-    Send the augmented prompt to OpenRouter and parse structured response.
-
+    Send the augmented prompt to Gemini via LiteLLM with fallback logic.
     Returns parsed JSON dict with the structured answer.
     """
-    client = get_openrouter_client()
     system_prompt = GUIDANCE_SYSTEM_PROMPT if is_guidance_mode else SYSTEM_PROMPT
 
     messages = [{"role": "system", "content": system_prompt}]
@@ -40,11 +30,14 @@ async def generate_answer(
     messages.append({"role": "user", "content": augmented_prompt})
 
     try:
-        response = await client.chat.completions.create(
-            model=settings.openrouter_model,
+        # Using LiteLLM's built-in fallback functionality
+        response = await litellm.acompletion(
+            model=settings.primary_model,
+            fallbacks=[settings.fallback_model],
             messages=messages,
             temperature=0.3,
             max_tokens=2000,
+            api_key=settings.gemini_api_key
         )
 
         content = response.choices[0].message.content
@@ -92,6 +85,6 @@ async def generate_answer(
             "summary": "I'm temporarily unable to process your request. Please try again in a moment.",
             "eligibility": None,
             "steps": [],
-            "notes": "Service temporarily unavailable. If this persists, please contact support.",
+            "notes": f"Service temporarily unavailable: {str(e)}",
             "sources": [],
         }
