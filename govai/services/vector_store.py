@@ -24,6 +24,22 @@ def get_qdrant_client() -> QdrantClient:
     )
 
 
+def _get_existing_vector_size(client: QdrantClient, collection_name: str) -> int | None:
+    """Read the existing vector size for a collection."""
+    collection_info = client.get_collection(collection_name)
+    vectors_config = collection_info.config.params.vectors
+
+    # Single-vector collections return VectorParams; multi-vector may return dict.
+    if hasattr(vectors_config, "size"):
+        return vectors_config.size
+
+    if isinstance(vectors_config, dict) and vectors_config:
+        first_vector = next(iter(vectors_config.values()))
+        return getattr(first_vector, "size", None)
+
+    return None
+
+
 async def get_async_qdrant_client() -> AsyncQdrantClient:
     global _async_client
     if _async_client is not None:
@@ -50,7 +66,7 @@ async def get_async_qdrant_client() -> AsyncQdrantClient:
         return AsyncQdrantClient(url=settings.qdrant_url, api_key=settings.qdrant_api_key)
 
 
-def ensure_collection():
+def ensure_collection(recreate_on_mismatch: bool = False):
     """Create the collection if it doesn't exist with optimized search settings."""
     client = get_qdrant_client()
     collections = [c.name for c in client.get_collections().collections]
@@ -70,6 +86,38 @@ def ensure_collection():
         )
         logger.info(f"Created collection with Scalar Quantization: {settings.qdrant_collection}")
     else:
+        existing_size = _get_existing_vector_size(client, settings.qdrant_collection)
+        if existing_size is not None and existing_size != settings.embedding_dimensions:
+            message = (
+                f"Collection '{settings.qdrant_collection}' vector size mismatch: "
+                f"existing={existing_size}, expected={settings.embedding_dimensions}. "
+                "Please recreate and reseed the collection for the current embedding model."
+            )
+
+            if recreate_on_mismatch:
+                logger.warning(f"{message} Recreating collection automatically.")
+                client.delete_collection(settings.qdrant_collection)
+                client.create_collection(
+                    collection_name=settings.qdrant_collection,
+                    vectors_config=VectorParams(
+                        size=settings.embedding_dimensions,
+                        distance=Distance.COSINE,
+                    ),
+                    quantization_config=ScalarQuantization(
+                        scalar=ScalarQuantizationConfig(
+                            type=ScalarType.INT8,
+                            always_ram=True,
+                        ),
+                    ),
+                )
+                logger.info(
+                    f"Recreated collection with vector size {settings.embedding_dimensions}: "
+                    f"{settings.qdrant_collection}"
+                )
+                return
+
+            raise RuntimeError(message)
+
         logger.info(f"Collection already exists: {settings.qdrant_collection}")
 
 

@@ -182,7 +182,7 @@ async def seed(dry_run: bool = False, recreate: bool = False):
         delete_collection()
 
     print("\n🗄️  Ensuring Qdrant collection exists...")
-    ensure_collection()
+    ensure_collection(recreate_on_mismatch=True)
 
     print("\n🧮 Generating embeddings (this may take a moment)...")
     embeddings = []
