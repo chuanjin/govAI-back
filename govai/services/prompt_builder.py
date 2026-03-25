@@ -81,7 +81,7 @@ def build_rag_prompt(
 
     context_text = "\n\n---\n\n".join(context_parts) if context_parts else "No relevant context found."
 
-    language_name = LANGUAGE_NAMES.get(language, "English")
+    language_name = LANGUAGE_NAMES.get(language, f"language code '{language}'")
 
     return f"""Context Documents:
 {context_text}

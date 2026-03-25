@@ -43,6 +43,9 @@ docker compose up -d
 
 # 2. Seed the database (runs in a ephemeral container)
 docker compose run --rm api uv run scripts/seed_vectordb.py
+
+# If embedding model/dimensions changed, recreate collection before seeding
+docker compose run --rm api uv run scripts/seed_vectordb.py --recreate
 ```
 API Documentation will be available at: http://localhost:8000/docs
 
@@ -90,7 +93,7 @@ The project is structured as a modern Python package:
 - **💬 Natural language chat interface** with context-aware responses.
 - **🔍 RAG-based answers** retrieved from official Swedish government data.
 - **📋 Structured answers** providing summaries, eligibility, and step-by-step instructions.
-- **🌍 Multilingual support** for English, Swedish, and Chinese.
+- **🌍 Multilingual support** with language-aware prompting and multilingual embeddings.
 - **🔗 Source attribution** including direct links to government agencies (Skatteverket, CSN, etc.).
 - **🎯 Guidance Mode** for walk-through help on complex processes.
 
