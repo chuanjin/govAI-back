@@ -7,6 +7,7 @@ and upserts into the Qdrant vector store.
 Usage:
     python scripts/seed_vectordb.py           # Seed the database
     python scripts/seed_vectordb.py --dry-run  # Preview chunks without seeding
+    python scripts/seed_vectordb.py --recreate # Delete and recreate collection before seeding
 """
 
 import os
@@ -21,7 +22,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 from govai.config import settings
 from govai.services.embedding_service import generate_embedding
-from govai.services.vector_store import ensure_collection, upsert_chunks, get_qdrant_client
+from govai.services.vector_store import ensure_collection, upsert_chunks, get_qdrant_client, delete_collection
 
 
 DATA_DIR = Path(__file__).parent.parent / "data"
@@ -149,7 +150,7 @@ def chunk_document(doc: dict, chunk_size: int = 800, overlap: int = 100) -> list
     return chunks
 
 
-async def seed(dry_run: bool = False):
+async def seed(dry_run: bool = False, recreate: bool = False):
     """Main seeding function."""
     print("📄 Reading documents from data directory...")
     documents = read_markdown_files()
@@ -176,6 +177,10 @@ async def seed(dry_run: bool = False):
         print(f"\n✅ Dry run complete. {len(all_chunks)} chunks would be created.")
         return
 
+    if recreate:
+        print(f"\n🗑️  Deleting existing collection: {settings.qdrant_collection}")
+        delete_collection()
+
     print("\n🗄️  Ensuring Qdrant collection exists...")
     ensure_collection()
 
@@ -196,9 +201,10 @@ async def seed(dry_run: bool = False):
 def main():
     parser = argparse.ArgumentParser(description="Seed GovAssist AI vector database")
     parser.add_argument("--dry-run", action="store_true", help="Preview chunks without seeding")
+    parser.add_argument("--recreate", action="store_true", help="Delete and recreate the collection before seeding")
     args = parser.parse_args()
 
-    asyncio.run(seed(dry_run=args.dry_run))
+    asyncio.run(seed(dry_run=args.dry_run, recreate=args.recreate))
 
 
 if __name__ == "__main__":
