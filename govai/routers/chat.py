@@ -61,6 +61,7 @@ async def chat(request: ChatRequest):
             augmented_prompt=augmented_prompt,
             conversation_history=history[:-1],  # Exclude current msg (in prompt)
             is_guidance_mode=is_guidance,
+            language=request.language,
         )
 
         # Build structured response

@@ -32,7 +32,7 @@ async def retrieve_and_build_context(
     )
     logger.info(f"Retrieved {len(chunks)} chunks")
 
-    # Step 3: Build augmented prompt
-    augmented_prompt = build_rag_prompt(chunks, query)
+    # Step 3: Build augmented prompt with language instruction
+    augmented_prompt = build_rag_prompt(chunks, query, language=language or "en")
 
     return augmented_prompt, chunks
