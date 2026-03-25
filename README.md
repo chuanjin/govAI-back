@@ -43,6 +43,9 @@ docker compose up -d
 
 # 2. Seed the database (runs in a ephemeral container)
 docker compose run --rm api uv run scripts/seed_vectordb.py
+
+# If embedding model/dimensions changed, recreate collection before seeding
+docker compose run --rm api uv run scripts/seed_vectordb.py --recreate
 ```
 API Documentation will be available at: http://localhost:8000/docs
 
