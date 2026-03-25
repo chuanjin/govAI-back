@@ -16,13 +16,20 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("🚀 GovAssist AI Backend starting up...")
-    # Try to connect to Qdrant on startup (non-blocking)
     try:
         from govai.services.vector_store import ensure_collection
         ensure_collection()
         logger.info("✅ Qdrant connection established")
     except Exception as e:
         logger.warning(f"⚠️  Qdrant not available: {e}. RAG will fail until Qdrant is running.")
+    # Pre-warm embedding model so first request isn't slow
+    try:
+        from govai.services.embedding_service import get_embedding_model
+        from fastapi.concurrency import run_in_threadpool
+        await run_in_threadpool(get_embedding_model)
+        logger.info("✅ Embedding model pre-warmed")
+    except Exception as e:
+        logger.warning(f"⚠️  Embedding model warm-up failed: {e}")
     yield
     logger.info("👋 GovAssist AI Backend shutting down...")
 

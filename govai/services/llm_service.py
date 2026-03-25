@@ -57,7 +57,7 @@ async def generate_answer(
             fallbacks=[settings.fallback_model],
             messages=messages,
             temperature=0.3,
-            max_tokens=2000,
+            max_tokens=800,
             api_key=settings.gemini_api_key
         )
 

@@ -5,8 +5,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
 
     gemini_api_key: str = ""
-    primary_model: str = "gemini/gemini-1.5-flash"
-    fallback_model: str = "gemini/gemini-1.5-pro"
+    primary_model: str = "gemini/gemini-2.0-flash"
+    fallback_model: str = "gemini/gemini-2.5-flash"
 
     embedding_model: str = "intfloat/multilingual-e5-large"
     embedding_dimensions: int = 1024
