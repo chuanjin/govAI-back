@@ -1,6 +1,7 @@
 import json
 import logging
 import litellm
+from json_repair import repair_json
 from govai.config import settings
 from govai.services.prompt_builder import SYSTEM_PROMPT, GUIDANCE_SYSTEM_PROMPT
 
@@ -61,24 +62,7 @@ async def generate_answer(
         )
 
         content = response.choices[0].message.content
-        
-        # Extract JSON object using string manipulation to handle extra text
-        start_idx = content.find('{')
-        end_idx = content.rfind('}')
-        
-        if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
-            content = content[start_idx:end_idx+1]
-        else:
-            # Fallback cleanup
-            content = content.strip()
-            if content.startswith("```json"):
-                content = content[7:]
-            elif content.startswith("```"):
-                content = content[3:]
-            if content.endswith("```"):
-                content = content[:-3]
-        
-        parsed = json.loads(content.strip())
+        parsed = json.loads(repair_json(content))
 
         # Validate required fields
         msgs = _ERROR_MESSAGES.get(language, _ERROR_MESSAGES["en"])

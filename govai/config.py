@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     primary_model: str = "gemini/gemini-1.5-flash"
     fallback_model: str = "gemini/gemini-1.5-pro"
 
-    embedding_model: str = "BAAI/bge-m3"
+    embedding_model: str = "intfloat/multilingual-e5-large"
     embedding_dimensions: int = 1024
 
     qdrant_url: str = "http://localhost:6333"
