@@ -3,9 +3,6 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    openrouter_api_key: str = ""
-    openrouter_api_base: str = "https://openrouter.ai/api/v1"
-    openrouter_model: str = "openrouter/auto"
 
     gemini_api_key: str = ""
     primary_model: str = "gemini/gemini-1.5-flash"
