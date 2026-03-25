@@ -90,7 +90,7 @@ The project is structured as a modern Python package:
 - **💬 Natural language chat interface** with context-aware responses.
 - **🔍 RAG-based answers** retrieved from official Swedish government data.
 - **📋 Structured answers** providing summaries, eligibility, and step-by-step instructions.
-- **🌍 Multilingual support** for English, Swedish, and Chinese.
+- **🌍 Multilingual support** with language-aware prompting and multilingual embeddings.
 - **🔗 Source attribution** including direct links to government agencies (Skatteverket, CSN, etc.).
 - **🎯 Guidance Mode** for walk-through help on complex processes.
 

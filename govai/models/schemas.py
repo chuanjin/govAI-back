@@ -5,7 +5,7 @@ from typing import Optional
 class ChatRequest(BaseModel):
     message: str = Field(..., min_length=1, max_length=2000)
     session_id: Optional[str] = None
-    language: str = Field(default="en", pattern="^(en|sv|zh)$")
+    language: str = Field(default="en", pattern=r"^[a-zA-Z]{2,3}(-[a-zA-Z]{2,4})?$")
 
 
 class Source(BaseModel):
