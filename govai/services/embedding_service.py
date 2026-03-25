@@ -1,4 +1,5 @@
 import logging
+import unicodedata
 from fastembed import TextEmbedding
 from govai.config import settings
 
@@ -15,9 +16,13 @@ def get_embedding_model() -> TextEmbedding:
     return _embedding_model
 
 def _generate_embedding_sync(text: str) -> list[float]:
+    normalized_text = unicodedata.normalize("NFKC", text).strip()
+    if not normalized_text:
+        raise ValueError("Cannot generate embedding for empty text")
+
     model = get_embedding_model()
     # FastEmbed returns a generator of numpy arrays
-    embeddings_generator = model.embed([text])
+    embeddings_generator = model.embed([normalized_text])
     embedding_array = next(embeddings_generator)
     return embedding_array.tolist()
 

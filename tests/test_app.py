@@ -25,7 +25,7 @@ def test_invalid_language():
     """
     payload = {
         "message": "Hello",
-        "language": "de"  # German not supported
+        "language": "invalid_language_code"
     }
     response = client.post("/api/chat", json=payload)
     assert response.status_code == 422
